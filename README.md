@@ -1,100 +1,81 @@
 # Preprocessing-Dataset-NLP
-LM-Powered SMS Spam Detection
 
-Project Overview
+NLP Text Preprocessing Pipeline
 
-This project demonstrates how to fine-tune a small, pre-trained Transformer-based Language Model (LLM) for a binary text classification task: identifying whether a Short Message Service (SMS) text is HAM (legitimate) or SPAM (unsolicited/malicious).
+This project provides a comprehensive pipeline for cleaning and preparing raw text data, typically for use in Natural Language Processing (NLP) tasks such as classification, topic modeling, or sentiment analysis. The core logic is implemented in a Jupyter notebook (Preprocessing.ipynb) and applied to an input dataset (emails.csv).
 
-The goal was to achieve high classification performance using resource-efficient settings, making the training process quick and feasible on a CPU-only environment.
+🚀 Overview
 
-Key Technologies Used
+The goal of this pipeline is to transform noisy, unstructured text data into a structured format suitable for machine learning models. It handles a variety of common cleaning tasks, ensuring the resulting text is standardized and normalized.
 
-Model: prajjwal1/bert-tiny (A highly compressed version of BERT for fast training).
+✨ Key Preprocessing Steps
 
-Dataset: ucirvine/sms_spam (The classic SMS Spam Collection dataset).
+The Preprocessing.ipynb notebook implements the following sequence of cleaning and normalization steps:
 
-Framework: Hugging Face transformers and datasets.
+1. Text Cleaning (clean_text function)
 
-Deployment (Optional): Streamlit.
+Lowercasing: Converts all text to lowercase to ensure consistency.
 
-🚀 Getting Started
+HTML Tag Removal: Eliminates any HTML or XML markup.
 
-1. Prerequisites
+URL Removal: Removes web links (e.g., http://, www.).
 
-Ensure you have Python 3.8+ and a virtual environment activated.
+Email Address Removal: Removes patterns matching email addresses.
 
-2. Installation
+Special Character and Number Removal: Keeps only alphabetic characters and spaces.
 
-Install all required libraries, including transformers, datasets, and streamlit for the optional deployment.
+Repeated Character Reduction: Reduces consecutive repeating characters to one (e.g., "loooove" becomes "love").
 
-pip install transformers datasets accelerate -U
-pip install evaluate scikit-learn numpy pandas
-pip install streamlit
+Whitespace Normalization: Removes extra spaces and leading/trailing whitespace.
 
+2. Linguistic Processing (preprocess function)
 
-3. Running the Fine-Tuning
+Tokenization: Breaks the cleaned text into individual words (tokens).
 
-The entire fine-tuning process is contained in the Jupyter Notebook: Fine-Tuning Spam Detection.ipynb.
+Stopword Removal: Eliminates common English words (like "the", "a", "is") that typically do not contribute to the overall meaning or predictive power.
 
-Open the Notebook: Launch your Jupyter environment and open the notebook.
+Lemmatization: Reduces words to their base or dictionary form (e.g., "running" becomes "run", "better" becomes "good").
 
-Run Cells Sequentially: Execute all cells from top to bottom.
+🛠️ Requirements
 
-The notebook performs the following steps:
+The project uses several standard Python libraries for NLP and data manipulation.
 
-Loads the ucirvine/sms_spam dataset.
+Python 3.x
 
-Splits the data into Train (80%), Validation (10%), and Test (10%).
+pandas
 
-Tokenizes the messages using the bert-tiny tokenizer.
+nltk
 
-Fine-tunes the model using the Hugging Face Trainer API with the following hyper-parameters optimized for speed:
+re (built-in)
 
-Model: prajjwal1/bert-tiny
+You can install the necessary external dependencies using pip:
 
-Epochs: 2
-
-Batch Size: 32
-
-Evaluates the final model on the test set, calculating Accuracy, F1-Score, Precision, and Recall.
-
-Generates and displays a Confusion Matrix.
-
-💾 Model Artifacts
-
-After successful training, the fine-tuned model and its tokenizer are saved to the local directory:
-
-Model Path: ./fine_tuned_spam_detector
-
-This directory contains the necessary files (pytorch_model.bin, config.json, tokenizer.json, etc.) for direct inference using the Hugging Face pipeline.
-
-🌐 Optional Deployment (Streamlit)
-
-A simple web interface using Streamlit is provided to interact with the trained model.
-
-1. Save the Deployment File
-
-Ensure the inference and deployment code is saved in a separate file named app.py in the same directory as the ./fine_tuned_spam_detector folder.
+pip install pandas nltk
 
 
-📈 Evaluation Results (Expected Metrics)
+Additionally, the script automatically downloads the required NLTK data packages (punkt, stopwords, wordnet) upon first run.
 
-Due to the use of the compressed bert-tiny model for faster CPU training, the model achieves impressive speed with only a minor trade-off in accuracy compared to larger models.
+💾 Usage
 
-Metric
+Input Data: Ensure your raw text data is available as a CSV file named emails.csv in the project directory. The notebook assumes the column containing the raw text is named "text".
 
-Target Goal
+Run the Notebook: Execute all cells in the Preprocessing.ipynb notebook.
 
-Accuracy
+Output: The notebook will save the processed dataset to a new CSV file named cleaned_dataset.csv. This new file will contain all original columns plus a new column, "processed_text", which holds the cleaned and preprocessed text.
 
-$> 98\%$
+ # Apply preprocessing to dataset
+ df["processed_text"] = df["text"].apply(preprocess)
 
-F1-Score (Macro)
+ # Save the cleaned dataset
+ df.to_csv("cleaned_dataset.csv", index=False)
 
-$> 0.95$
 
-Recall (SPAM)
+📝 Future Enhancements
 
-High (Low False Negatives)
+Implementing Stemming as an alternative to Lemmatization (for comparison).
 
-The Confusion Matrix provides a crucial visual assessment of the model's performance, particularly showing its ability to minimize False Negatives (failing to catch actual spam).
+Adding support for Bi-grams or Tri-grams after tokenization.
+
+Integrating a step for handling custom domain-specific vocabulary (e.g., common abbreviations in the dataset).
+
+Adding a visualization/analysis step to show the impact of the preprocessing (e.g., word count reduction, distribution changes).
